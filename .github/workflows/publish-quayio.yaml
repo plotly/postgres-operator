@@ -30,7 +30,7 @@ jobs:
       - name: Define image name
         id: image
         run: |
-            OPERATOR_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF/refs\/tags\//}"
+            OPERATOR_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF_NAME}"
             echo "OPERATOR_IMAGE=$OPERATOR_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU

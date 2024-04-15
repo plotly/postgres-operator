@@ -1,0 +1,57 @@
+name: Publish multiarch postgres-operator images on quay.io/plotly
+
+env:
+  REGISTRY: quay.io/plotly
+  IMAGE_NAME: postgres-operator
+
+on:
+  push:
+    branches:
+      - "*_w-o_sec_validation"
+
+jobs:
+  publish:
+    name: Build, test and push image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v2
+        with:
+          go-version: "^1.21.7"
+
+      - name: Run unit tests
+        run: make deps mocks test
+
+      - name: Define image name
+        id: image
+        run: |
+            OPERATOR_IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${GITHUB_REF/refs\/tags\//}"
+            echo "OPERATOR_IMAGE=$OPERATOR_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Quay
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: plotly+postgresop
+          password: ${{ secrets.QUAY_POSTGRES_OPEARTOR }}
+
+      - name: Build and push multiarch operator image to ghcr
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          build-args: BASE_IMAGE=alpine:3.15
+          tags: "${{ steps.image.outputs.OPERATOR_IMAGE }}"
+          platforms: linux/amd64,linux/arm64

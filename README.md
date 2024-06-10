@@ -11,6 +11,13 @@ clusters on Kubernetes (K8s) powered by [Patroni](https://github.com/zalando/pat
 It is configured only through Postgres manifests (CRDs) to ease integration into automated CI/CD
 pipelines with no access to Kubernetes API directly, promoting infrastructure as code vs manual operations.
 
+<div align="center">
+  <a href="https://dash.plotly.com/project-maintenance">
+    <img src="https://dash.plotly.com/assets/images/maintained-by-plotly.png" width="400px" alt="Maintained by Plotly">
+  </a>
+</div>
+
+
 ### Operator features
 
 * Rolling updates on Postgres cluster changes, incl. quick minor version updates

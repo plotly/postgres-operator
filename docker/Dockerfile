@@ -16,6 +16,9 @@ LABEL org.opencontainers.image.source="https://github.com/zalando/postgres-opera
 RUN apk -U upgrade --no-cache \
     && apk add --no-cache curl ca-certificates
 
+# CVE-2026-111497: fail the build unless the base carries the fixed brotli-libs
+RUN apk version -t "$(apk list -I brotli-libs | cut -d' ' -f1 | sed 's/^brotli-libs-//')" 1.2.1-r0 | grep -q '[=>]'
+
 COPY --from=builder /go/src/github.com/zalando/postgres-operator/build/* /
 
 RUN addgroup -g 1000 pgo

@@ -1,5 +1,7 @@
-ARG BASE_IMAGE=alpine:latest
-FROM golang:1.25-alpine AS builder
+# Pinned so a rebuild cannot silently change the Alpine release.
+ARG BASE_IMAGE=alpine:3.24
+# Go 1.27.3 fixes CVE-2026-111943 in crypto/x509. go.mod needs 1.25.3 or later.
+FROM golang:1.27.3-alpine AS builder
 ARG VERSION=latest
 
 COPY  . /go/src/github.com/zalando/postgres-operator
